@@ -1,8 +1,14 @@
-<%- include('../partials/header') %>
 
-<main>
-  <h1><%= title %></h1>
-  <%- itemHTML %>
+
+<link rel="stylesheet" href="/css/styles.css">
+
+<main class="vehicle-detail-page">
+  <!-- Page Title -->
+  <h1 class="page-title"><%= title %></h1>
+
+  <!-- Vehicle Detail -->
+  <section class="vehicle-detail">
+    <%- itemHTML %>
+  </section>
 </main>
 
-<%- include('../partials/footer') %>

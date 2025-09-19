@@ -25,15 +25,15 @@ invCont.buildByClassificationId = async function (req, res, next) {
  * ************************** */
 invCont.buildByInvId = async function (req, res, next) {
   const invId = req.params.invId
-  const data = await invModel.getInventoryByInvId(invId)
+  const data = await invModel.getInventoryById(invId)
 
   if (!data) {
     req.flash("notice", "Sorry, that vehicle was not found.")
-    res.redirect("/inv")
-    return
+    return res.redirect("/inv")
   }
 
-  const itemHTML = await utilities.buildVehicleDetailHTML(data)
+  // Pass the object directly (not data[0])
+  const itemHTML = utilities.buildVehicleDetail(data)
   let nav = await utilities.getNav()
 
   res.render("./inventory/detail", {
@@ -42,6 +42,7 @@ invCont.buildByInvId = async function (req, res, next) {
     itemHTML,
   })
 }
+
 
 /* ***************************
  *  Build vehicle detail view
