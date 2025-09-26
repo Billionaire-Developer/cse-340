@@ -1,20 +1,14 @@
-// Needed Resources 
-const express = require("express")
-const router = new express.Router() 
-const invController = require("../controllers/invController")
-const utilities = require("../utilities")
+const express = require("express");
+const router = express.Router();
+const invController = require("../controllers/invController");
+const utilities = require("../utilities/");
 const validation = require("../utilities/account-validation");
 
 // Route to build inventory by classification view
-router.get("/type/:classificationId", utilities.handleError(invController.buildByClassificationId));
+router.get("/type/:classificationId", invController.buildByClassificationId);
 
-// Vehicle detail route
-router.get("/detail/:invId", utilities.handleError(invController.buildByInvId));
-
-
-// ✅ Intentional error route
-router.get("/trigger-error", utilities.handleError(invController.throwError))
-
+// Route to build vehicle detail view
+router.get("/detail/:vehicleId", invController.buildVehicleDetail);
 
 // Route to build inventory management view
 // Route to build inventory management view
@@ -93,6 +87,5 @@ router.post(
 router.get("/cause-error", (req, res, next) => {
   next(new Error("Intentional error for testing purposes"));
 });
-
 
 module.exports = router;
