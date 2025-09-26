@@ -12,7 +12,13 @@ const app = express()
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require('./routes/inventoryRoute');
-
+const accountRoute = require("./routes/accountRoute");
+const session = require("express-session");
+const pool = require("./database/");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const feedbackRoute = require('./routes/feedbackRoute');
+const errorHandler = require("./middleware/errorHandler");
 const utilities = require("./utilities/")  // make sure this is at the top of server.js
 
 /* ***********************
@@ -29,6 +35,13 @@ app.use(express.static("public"))
 
 // Serve the images folder directly
 app.use("/images", express.static("images"))
+
+
+// parse form data
+app.use(express.urlencoded({ extended: true }))
+
+// parse JSON (if needed)
+app.use(express.json())
 
 /* ***********************
  * Routes
@@ -54,6 +67,14 @@ const host = process.env.HOST
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
+
+
+// Account routes
+app.use("/account", accountRoute)
+
+// Feedback routes
+app.use("/feedback", feedbackRoute)
+
 
 
 // 500 Error Middleware

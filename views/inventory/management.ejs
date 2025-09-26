@@ -1,0 +1,26 @@
+<div class="container">
+  <% if (messages.success) { %>
+      <div class="alert alert-success"><%= messages.success %></div>
+  <% } %> 
+  <% if (messages.error) { %>
+      <div class="alert alert-error"><%= messages.error %></div>
+  <% } %>
+
+  <h1>Inventory Management</h1>
+  <ul>
+      <li><a href="/inv/add-classification">Add New Classification</a></li>
+      <li><a href="/inv/add-inventory">Add New Inventory Item</a></li>
+  </ul>
+  
+  <h2>Manage Inventory</h2>
+  <p>Select a classification:</p>
+  <%- classificationSelect %> <!-- Ensure this generates a valid <select> element -->
+  
+  <table id="inventoryDisplay"></table>
+
+  <noscript>
+      <div>Please enable JavaScript in your browser to use this page effectively.</div> <!-- Changed message for clarity -->
+  </noscript>
+
+  <script src="/js/inventory.js"></script> <!-- Changed to absolute path for consistency -->
+</div>

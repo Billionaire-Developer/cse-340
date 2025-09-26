@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const invModel = require("../models/inventory-model");
 const accModel = require("../models/account-model");

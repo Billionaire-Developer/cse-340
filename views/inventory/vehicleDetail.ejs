@@ -1,0 +1,32 @@
+<div class="vehicle-detail-container"><%- vehicleHtml %></div>
+
+<div class="comment-box">
+
+  <h2 style="margin-bottom: 5px;">Comments</h2>
+  <form action="/inv/comment" method="post">
+    <label class="top">We want your opinion:
+      <textarea name="comment_text" id="comment_text" cols="32" rows="5" placeholder="Leave a comment here." required></textarea>
+    </label>
+    <br>
+    <div class="submitBtn2">
+      <input type="submit" value="Send Comment">
+    </div>
+    <input type="hidden" name="account_id"
+    <% if(locals.accountData) { %> value="<%= locals.accountData.account_id %>"
+    <% } %>>
+    <input type="hidden" name="vehicle_id" value="<%= vehicle_id %>">
+  </form>
+  <%- messages() %>
+  <% if (errors) { %>
+    <ul class="notice">
+      <% errors.array().forEach(error => { %>
+        <% if (error.msg !== "Invalid value") { %>
+          <li><%= error.msg %></li>
+          <% } %>
+          <% }) %>
+        </ul>
+        <% } %>
+        <ul class="ulcomment">
+          <%- comments %>
+        </ul>
+</div>
