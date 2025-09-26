@@ -1,104 +1,93 @@
 /* ******************************************
- * This server.js file is the primary file of the 
+ * This server.js file is the primary file of the
  * application. It is used to control the project.
  *******************************************/
 /* ***********************
  * Require Statements
  *************************/
-const express = require("express")
-const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
-const app = express()
-const static = require("./routes/static")
-const baseController = require("./controllers/baseController")
-const inventoryRoute = require('./routes/inventoryRoute');
-const accountRoute = require("./routes/accountRoute");
+const express = require("express");
+const env = require("dotenv").config();
+const expressLayouts = require("express-ejs-layouts");
+const app = express();
 const session = require("express-session");
 const pool = require("./database/");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const static = require("./routes/static");
+const baseController = require("./controllers/baseController");
+const inventoryRoute = require("./routes/inventoryRoute");
+const accountRoute = require("./routes/accountRoute");
 const feedbackRoute = require('./routes/feedbackRoute');
 const errorHandler = require("./middleware/errorHandler");
-const utilities = require("./utilities/")  // make sure this is at the top of server.js
-
-/* ***********************
- * View Engine Templates
- *************************/
-app.set("view engine", "ejs")
-app.use(expressLayouts)
-app.set("layout", "./layouts/layout") // not at views root
+const utilities = require("./utilities/");
 
 /* ***********************
  * Middleware
  *************************/
-app.use(express.static("public"))
+app.use(
+  session({
+    store: new (require("connect-pg-simple")(session))({
+      createTableIfMissing: true,
+      pool,
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    name: "sessionId",
+  })
+);
 
-// Serve the images folder directly
-app.use("/images", express.static("images"))
+// Express Messages Middleware
+app.use(require("connect-flash")());
+app.use(function (req, res, next) {
+  res.locals.messages = require("express-messages")(req, res);
+  next();
+});
 
+// Body Parser Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// parse form data
-app.use(express.urlencoded({ extended: true }))
+// Cookie Parser Middleware
+app.use(cookieParser());
 
-// parse JSON (if needed)
-app.use(express.json())
+// Middleware to check token validity
+app.use(utilities.checkJWTToken);
+
+/* ***********************
+ * View Engine and Templates
+ *************************/
+app.set("view engine", "ejs");
+app.use(expressLayouts);
+app.set("layout", "layouts/layout");
 
 /* ***********************
  * Routes
  *************************/
-app.use(static)
+app.use(static);
 
-/*Index route */
-app.get("/", baseController.buildHome)
+// Index route
+app.get("/", baseController.buildHome);
+// Inventory route
+app.use("/inv", inventoryRoute);
+// Account route
+app.use("/account", accountRoute);
+// feedback Route
+app.use(feedbackRoute);
+// Error handler
+app.use(errorHandler);
 
-// Inventory routes
-app.use("/inv", inventoryRoute)
 
 /* ***********************
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = process.env.PORT;
+const host = process.env.HOST;
 
 /* ***********************
  * Log statement to confirm server operation
  *************************/
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
-})
-
-
-// Account routes
-app.use("/account", accountRoute)
-
-// Feedback routes
-app.use("/feedback", feedbackRoute)
-
-
-
-// 500 Error Middleware
-app.use(async (err, req, res, next) => {   // 🔹 mark middleware async
-  console.error("500 error caught: ", err.message);
-
-  let nav = await utilities.getNav()       // 🔹 generate nav
-
-  res.status(500).render("errors/error", {
-    title: "Server Error",
-    message: "Something went wrong on our server. Please try again later.",
-    nav
-  });
+  console.log(`app listening on ${host}:${port}`);
 });
-
-
-// 404 Error Middleware (must be AFTER all routes)
-app.use(async (req, res, next) => {
-  const utilities = require("./utilities/")
-  let nav = await utilities.getNav()
-
-  res.status(404).render("errors/error", {
-    title: "404 Not Found",
-    message: "Sorry, the page you are looking for does not exist.",
-    nav
-  })
-})
