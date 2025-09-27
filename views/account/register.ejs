@@ -13,7 +13,7 @@
 
           <% if (messages && messages.length > 0) { %>
             <ul class="notice">
-              <% messages.forEach(msg => { %>
+              <% (Array.isArray (messages) ? messages : [messages]).forEach(msg => { %>
                 <li><%= msg %></li>
               <% }) %>
             </ul>
